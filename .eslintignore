@@ -1,0 +1,11 @@
+/client/build/
+/client/config/
+/client/dist/
+/test/unit/coverage/
+/client/src/assets/fonts/
+/server/public
+/dist/*
+/coverage/
+/client/src/utils/graph.js
+/client/node_modules
+/server/node_modules
