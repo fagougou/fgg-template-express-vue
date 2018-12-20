@@ -9,6 +9,8 @@ const users = require('./routes/users')
 
 const app = express()
 
+const ERROR_CODE = require('./error_code.json')
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'pug')
@@ -28,19 +30,28 @@ app.use('/users', users)
 app.use(function (req, res, next) {
     const err = new Error('Not Found')
 
-    err.status = 404
+    err.code = '10002'
     next(err)
 })
 
 // error handler
 app.use(function (err, req, res, next) {
+    const DEFAULT_ERRORCODE = '40001'
+    const code = err.code || DEFAULT_ERRORCODE
+    const targetError = ERROR_CODE[code]
+
     // set locals, only providing error in development
+
     res.locals.message = err.message
     res.locals.error = req.app.get('env') === 'development' ? err : {}
 
+    console.error('error info:', err)
     // render the error page
-    res.status(err.status || 500)
-    res.render('error')
+    res.status(targetError.statusCode || 500)
+        .json({
+            code: code,
+            message: err.message ||targetError.message
+        })
 })
 
 module.exports = app

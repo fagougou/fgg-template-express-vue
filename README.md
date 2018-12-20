@@ -8,6 +8,12 @@ A template for creating a full stack web application with Vue.js and Express.js,
 2. express.js server side created by  `express-generator`, with `nodemon`
 3. linting before commit, with FGG js/vue style
 4. integrate with any database you like, Mongo, MySQL, Oracle whatsoever...
+5. error codes provived in `error_code.json`
+
+
+## Guides
+1. config your routes in `routes/prod/*.json`, coding your controllers in `controllers/*.js`
+2. 
 
 ## Get Started
 
