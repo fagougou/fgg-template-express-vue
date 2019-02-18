@@ -1,11 +1,11 @@
 {
+	"location":"hello.js",
 	"authorized":[
 
 	],
 	"public":[{
 		"method":"get",
 		"path":"/hello",
-		"location":"hello.js",
 		"handler":"sayHello",
 		"description":""
 	}]

@@ -14,25 +14,32 @@ const { responseHandler } = require('../lib/response')
  * read routes from .json file which located in routers/prod/
  * @return {object}
 **/
-function getRouterTable () {
-    const routerTable = {
-        public: [],
-        authorized: []
-    }
+function getRouteTable () {
+    const routeTable = []
     // 遍历routes/prod下的json文件 合并成路由表
-    const routerPath = path.resolve(__dirname, './prod/')
+    const routePath = path.resolve(__dirname, './prod/')
 
-    fs.readdirSync(routerPath).forEach((fileName) => {
+    fs.readdirSync(routePath).forEach((fileName) => {
         if (path.extname(fileName) === '.json'){
-            const routerPath = path.resolve(__dirname, `./prod/${fileName}`)
-            const routerContent = require(routerPath)
+            const routePath = path.resolve(__dirname, `./prod/${fileName}`)
+            const routeContent = require(routePath)
+            const location = routeContent.location
 
-            routerTable.public.push(...routerContent.public)
-            routerTable.authorized.push(...routerContent.authorized)
+            routeContent.public.forEach(r => {
+                r.location = location
+                r.isAuthorized = false
+                routeTable.push(r)
+            })
+
+            routeContent.authorized.forEach(r => {
+                r.location = location
+                r.isAuthorized = true
+                routeTable.push(r)
+            })
         }
     })
 
-    return routerTable
+    return routeTable
 }
 
 function checkAuth (req, res, next){
@@ -46,27 +53,39 @@ function checkAuth (req, res, next){
  * @param {func} handler
  * @return {object}
 **/
-const routerTable = getRouterTable()
+const routeTable = getRouteTable()
 
-routerTable.authorized.forEach(r => {
-    const method = r.method.toLowerCase()
-    const handlerPath = path.resolve(__dirname, `../controllers/${r.location}`)
-    const handlerName = r.handler
-    const handler = require(handlerPath)[handlerName]
+loadRoutes(routeTable)
 
-    router[method](`${r.path}`, checkAuth, responseHandler(handler))
-    console.info(`[load authorized router]:${method} - ${r.path}`)
-})
+/**
+ * 加载路由
+ * @param {object} table - 记录路由信息的对象
+ * @param {array} table.routes - 路由数组
+ * @param {string} table.routes.method - 路由方法 get post put delete
+ * @param {string} table.routes.path - 路由地址
+ * @param {string} table.routes.handler - 路由的处理方法
+ * @param {string} table.routes.description - 路由的介绍
+ * @param {boolean} table.routes.boolean - 是否公开
+**/
+function loadRoutes (routeTable){
 
-routerTable.public.forEach(r => {
-    const method = r.method.toLowerCase()
-    const handlerPath = path.resolve(__dirname, `../controllers/${r.location}`)
-    const handlerName = r.handler
-    const handler = require(handlerPath)[handlerName]
+    routeTable.forEach(r => {
+        const handlerPath = path.resolve(__dirname, `../controllers/${r.location}`)
+        const method = r.method.toLowerCase()
+        const handlerName = r.handler
+        const handler = require(handlerPath)[handlerName]
 
-    router[method](`${r.path}`,  responseHandler(handler))
-    console.info(`[load public router]: "${method} - ${r.path}`)
-})
+        if (r.isAuthorized){
+            router[method](`${r.path}`, checkAuth, responseHandler(handler))
+            console.info(`[load authorized router]:${method} - ${r.path}`)
+        } else {
+
+            router[method](`${r.path}`, responseHandler(handler))
+            console.info(`[load authorized router]:${method} - ${r.path}`)
+        }
+    })
+
+}
 
 // Define the different Routers for dev and dev:mock
 if (process.env.NODE_ENV !== 'production') {
