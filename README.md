@@ -13,7 +13,6 @@ A template for creating a full stack web application with Vue.js and Express.js,
 
 ## Guides
 1. config your routes in `routes/prod/*.json`, coding your controllers in `controllers/*.js`
-2. 
 
 ## Get Started
 
