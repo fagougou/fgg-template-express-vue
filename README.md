@@ -32,3 +32,13 @@ Finally, visit `localhost:3000`.
 3. pre-commit
 4. lint-staged
 
+## Error Handle
+
+Use the error code defined in `server/error_code.json`, 
+
+```javascript
+const err = new Error('')
+err.code = '10003'
+throw err
+```
+
