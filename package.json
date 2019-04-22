@@ -4,7 +4,7 @@
   "description": "A none database oriented full-stack web application template, powered by Vue.js + Express.js, present by FGG hackers",
   "main": "index.js",
   "scripts": {
-    "start": "npm run frontend & npm run backend",
+    "start": "node server/bin/www",
     "backend": "NODE_ENV=development nodemon server/bin/www",
     "frontend": "node_modules/webpack-dev-server/bin/webpack-dev-server.js --inline --progress --config client/build/webpack.dev.conf.js",
     "lint": "node_modules/eslint/bin/eslint.js --fix --quiet",
