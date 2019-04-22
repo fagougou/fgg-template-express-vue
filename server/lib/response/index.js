@@ -6,7 +6,7 @@
 const responseHandler = (handler) => (req, res, next) => {
 
     try {
-        handler(req, res).then((resolved) => {
+        Promise.resolve(handler(req, res)).then((resolved) => {
             if (req.directResponse) {
                 res.send(resolved)
             } else {
